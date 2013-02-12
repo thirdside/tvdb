@@ -1,5 +1,5 @@
 class Season < ActiveRecord::Base
-  attr_accessible :title
+  attr_accessible :number, :episodes
 
   belongs_to :show
   

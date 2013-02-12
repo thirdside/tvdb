@@ -1,0 +1,5 @@
+%h1= resource_class.model_name.human.pluralize
+
+%ul
+  - collection.each do |resource|
+    %li= link_to resource.decorator.display_name, resource

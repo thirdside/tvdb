@@ -5,3 +5,16 @@
 #
 #   cities = City.create([{ name: 'Chicago' }, { name: 'Copenhagen' }])
 #   Mayor.create(name: 'Emanuel', city: cities.first)
+
+Show.create([{
+  title: "Dexter",
+  seasons: [
+    Season.new(
+      number: 1,
+      episodes: [
+        Episode.new(
+          number: 1,
+          title: "From time to time"
+        )]
+    )]
+}])
