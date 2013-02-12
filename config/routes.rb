@@ -6,7 +6,7 @@ Tvdb::Application.routes.draw do
     end
   end
 
-  match "/search/:query" => "search#search"
+  match "/search/:torrent" => "search#torrent", :constraints => { :torrent => /[^\/]+/ }
 
   root :to => 'shows#index'
 end
