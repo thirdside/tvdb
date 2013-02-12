@@ -20,6 +20,7 @@ group :assets do
   gem 'uglifier', '>= 1.0.3'
 end
 
+gem 'retriable'
 gem 'tvdbr'
 gem 'inherited_resources'
 gem 'jquery-rails'
