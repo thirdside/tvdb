@@ -15,13 +15,14 @@ ActiveRecord::Schema.define(:version => 20130212020603) do
 
   create_table "episodes", :force => true do |t|
     t.integer  "season_id"
+    t.string   "reference_id"
     t.integer  "number"
     t.string   "title"
     t.text     "description"
     t.datetime "date"
     t.integer  "duration"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
   end
 
   create_table "seasons", :force => true do |t|
