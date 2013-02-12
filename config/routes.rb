@@ -6,5 +6,7 @@ Tvdb::Application.routes.draw do
     end
   end
 
+  match "/search/:query" => "search#search"
+
   root :to => 'shows#index'
 end
