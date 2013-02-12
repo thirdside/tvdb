@@ -27,3 +27,6 @@ gem 'jquery-rails'
 gem 'haml'
 gem 'thin'
 gem 'draper'
+gem 'utilities'
+gem 'pry'
+
