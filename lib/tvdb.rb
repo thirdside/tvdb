@@ -6,6 +6,12 @@ require 'open3'
 require 'json'
 
 module TVDB
+  class Logger
+    def log message
+      puts message
+    end
+  end
+
   class Episode
     
     attr_accessor :id, :number, :title, :description, :season, :show, :date
@@ -19,16 +25,22 @@ module TVDB
 
       e
     end
+
+    def initialize
+      Logger.log "New episode created"
+    end
   end
 
   class API
     
     def self.get(file)
-      # let's try with the web service first...
-      e = WWW.get(File.basename(file))
+      e = nil
 
-      # didn't work? Let's try AtomicParsley
-      e = System.get(file) unless e
+      # Let's try AtomicParsley
+      e = System.get(file)
+
+      # didn't work? let's try with the web service first...
+      e = WWW.get(File.basename(file)) unless e
 
       # return the episode
       e
@@ -47,6 +59,8 @@ module TVDB
       }
 
       def self.get(file)
+        Logger.log "TVDB::API::System #{info}"
+
         info = {}
 
         _, stdout, _ = Open3.popen3('AtomicParsley', file, '-t')
@@ -56,9 +70,11 @@ module TVDB
         end
 
         if info['show'] && info['season'] && info['number'] && info['title']
+          Logger.log "TVDB::API::System enough info, let's create an episode!"
+
           Episode.parse(info)
         else
-          puts "Can't collect information for #{file}"
+          Logger.log "TVDB::API::System can't collect enough information for #{file}"
         end
       end
     end
@@ -75,6 +91,8 @@ module TVDB
 
       def self.fetch(url)
         response = Net::HTTP.get_response(URI(url))
+
+        Logger.log "TVDB::API::WWW Response is #{response}"
 
         case response
           when Net::HTTPSuccess then
@@ -102,11 +120,13 @@ module TVDB
 
     def run
       files.each do |file|
+        Logger.log "Working on #{file}"
+
         # first, let's try with the service
         if episode = API.get(file)
           copy(file, episode)
         else
-          puts "Can't find episode : #{file}"
+          Logger.log "Can't find episode : #{file}"
         end
       end
     end
@@ -125,7 +145,7 @@ module TVDB
       begin
         FileUtils.link(file, dest)
       rescue Errno::EEXIST
-        puts "Destination file already exists : #{dest}"
+        Logger.log "Destination file already exists : #{dest}"
       end
 
       # delete the original file if required
