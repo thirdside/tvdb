@@ -7,7 +7,9 @@ Tvdb::Application.routes.draw do
   end
 
   match "/search/:show/:season/:episode" => "search#url"
-  match "/search/:torrent" => "search#torrent", :constraints => { :torrent => /([^\/]+)[^#{Mime::EXTENSION_LOOKUP.keys.join('|')}]/ }
+  match "/search/:torrent" => "search#torrent", :constraints => {
+    :torrent  => /([^\/]+)[^(xml|html|json|xbmc)]/
+  }
 
   root :to => 'shows#index'
 end

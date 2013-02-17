@@ -20,7 +20,7 @@ class SearchController < ApplicationController
   protected
 
   def search show, season, episode
-    show      = Show.where(title: show).first_or_initialize
+    show      = Show.where("lower(title) LIKE ?", show.downcase).first_or_initialize
     season    = show.seasons.where(number: season).first_or_initialize
     
     if episode = season.episodes.where(number: episode).first
