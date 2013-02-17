@@ -132,7 +132,7 @@ module TVDB
     end
 
     def files
-      @files ||= Dir.glob("**/*.{#{@options[:extensions].join(',')}}")
+      @files ||= Dir.glob("#{@options[:source]}/**/*.{#{@options[:extensions].join(',')}}")
     end
 
     def copy file, episode
