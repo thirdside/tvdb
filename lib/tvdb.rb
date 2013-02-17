@@ -59,8 +59,6 @@ module TVDB
       }
 
       def self.get(file)
-        Logger.log "TVDB::API::System #{info}"
-
         info = {}
 
         _, stdout, _ = Open3.popen3('AtomicParsley', file, '-t')
