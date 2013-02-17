@@ -1,5 +1,6 @@
 #encoding: UTF-8
 
+require 'choice'
 require 'cgi'
 require 'fileutils'
 require 'net/http'
@@ -7,6 +8,7 @@ require 'open3'
 require 'json'
 
 module TVDB
+  
   class Logger
     def self.log message
       $stdout.puts message
@@ -101,13 +103,7 @@ module TVDB
   class App
 
     def initialize(params)
-      @options = {
-        :source           => params[0] || ".",
-        :destination      => params[1] || "destination",
-        :extensions       => %w(avi mp4 mkv m4v),
-        :format           => "%show/%season/%number. %title",
-        :delete_original  => false
-      }
+      @options = params
     end
 
     def run
@@ -121,7 +117,7 @@ module TVDB
     end
 
     def files
-      @files ||= Dir.glob("#{@options[:source]}/**/*.{#{@options[:extensions].join(',')}}")
+      @files ||= Dir.glob("#{@options[:source]}/**/*.{#{@options[:extensions]}}")
     end
 
     def copy file, episode
@@ -150,4 +146,42 @@ module TVDB
   end
 end
 
-TVDB::App.new(ARGV).run
+Choice.options do
+  header ''
+  header 'Specific options:'
+
+  option :source do
+    short '-s'
+    long '--source=SOURCE'
+    desc 'Source folder for all files (default "source")'
+    default 'source'
+  end
+
+  option :destination do
+    short '-d'
+    long '--destination=DESTINATION'
+    desc 'Destination folder for files (default "TV Shows")'
+    default "TV Shows"
+  end
+
+  option :extensions do
+    short '-e'
+    long '--extensions=EXTENSIONS'
+    desc 'File extensions (default "avi,mp4,mkv,m4v")'
+    default "avi,mp4,mkv,m4v"
+  end
+
+  option :format do
+    short '-f'
+    long '--format=FORMAT'
+    desc 'Format episode name (default "%show/%season/%number. %title")'
+    default "%show/%season/%number. %title"
+  end
+
+  option :delete do
+    long '--delete'
+    desc 'Delete the original file'
+  end
+end
+
+TVDB::App.new(Choice).run
