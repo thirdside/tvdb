@@ -3,4 +3,7 @@ class Show < ActiveRecord::Base
 
   has_many :seasons, dependent: :destroy
   has_many :episodes, through: :seasons, dependent: :destroy
+  
+  has_many :starrings, as: :starrable, dependent: :destroy
+  has_many :actors, through: :starrings
 end

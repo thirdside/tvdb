@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 def update_show(s)
   retriable on: [Timeout::Error], interval: 1 do
     show = Show.where(title: s.title).first_or_create
@@ -5,11 +7,24 @@ def update_show(s)
       description: s.overview
     )
 
-    s.episodes.each do |e|
+    # Update Actors
+    s.actors.each do |a|
+      actor = Actor.where(name: a).first_or_create
+      show.actors << actor unless show.actors.include?(actor)
+    end
 
+    # Update Episodes
+    s.episodes.each do |e|
       season = Season.where(show_id: show, number: e.season_num).first_or_create
 
       episode = Episode.where(reference_id: e.id).first_or_create
+
+      # Update Actors
+      e.guest_stars.split("|").reject(&:empty?).each do |a|
+        actor = Actor.where(name: a).first_or_create
+        episode.actors << actor unless episode.actors.include?(actor)
+      end if e.guest_stars
+
       puts "Updating #{e.name}"
       episode.update_attributes(
         season:       season,
@@ -23,8 +38,9 @@ def update_show(s)
 end
 
 namespace :tvdb do
-  tvdb = Tvdbr::Client.new('918153CC4FEFC92A')
 
+  tvdb = Tvdbr::Client.new('918153CC4FEFC92A')
+  
   task update: :environment do
     Show.all.each do |show|
       s = tvdb.fetch_series_from_data(title: show.title)
@@ -41,5 +57,5 @@ namespace :tvdb do
     end
 
     ProviderUpdate.create
-  end
+  end 
 end
