@@ -5,10 +5,9 @@ class SearchController < ApplicationController
   end
 
   def torrent
-    if params[:torrent]
-      torrent = params[:torrent].match(/(?<title>.+)\.S?(?<season>\d{2})E?(?<episode>\d{2})/)
-
-      # sanitize a bit...
+    if params[:torrent].present?
+      torrent = params[:torrent].match(/(?<title>.+)\.[sS]?(?<season>\d+)[eExX](?<episode>\d+)/)
+      
       title     = torrent["title"].split(".").join(" ")
       season    = torrent["season"].to_i
       episode   = torrent["episode"].to_i
@@ -17,10 +16,14 @@ class SearchController < ApplicationController
     end
   end
 
+  def query
+    # let's do some research!
+  end
+
   protected
 
   def search show, season, episode
-    show      = Show.where(title: show).first_or_initialize
+    show      = Show.where("lower(title) LIKE ?", show.downcase).first_or_initialize
     season    = show.seasons.where(number: season).first_or_initialize
     
     if episode = season.episodes.where(number: episode).first

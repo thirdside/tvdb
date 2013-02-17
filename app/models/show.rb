@@ -6,4 +6,12 @@ class Show < ActiveRecord::Base
   
   has_many :starrings, as: :starrable, dependent: :destroy
   has_many :actors, through: :starrings
+
+  def serializable_hash(options=nil)
+    {
+      title: title,
+      seasons_count: seasons.count,
+      episodes_count: episodes.count
+    }
+  end
 end

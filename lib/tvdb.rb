@@ -1,5 +1,6 @@
 #encoding: UTF-8
 
+require 'cgi'
 require 'fileutils'
 require 'net/http'
 require 'open3'
@@ -8,7 +9,11 @@ require 'json'
 module TVDB
   class Logger
     def self.log message
-      puts message
+      $stdout.puts message
+    end
+
+    def self.err message
+      $stderr.puts message
     end
   end
 
@@ -25,28 +30,19 @@ module TVDB
 
       e
     end
-
-    def initialize
-      Logger.log "New episode created"
-    end
   end
 
   class API
     
     def self.get(file)
-      e = nil
-
-      # Let's try AtomicParsley
-      e = System.get(file)
-
-      # didn't work? let's try with the web service first...
-      e = WWW.get(File.basename(file)) unless e
-
-      # return the episode
-      e
+      [AtomicParsley, WWW].each do |klass|
+        if e = klass.get(file)
+          return e
+        end
+      end; nil
     end
 
-    class System
+    class AtomicParsley
       
       @@prop = {
         "©nam" => 'title',
@@ -59,8 +55,6 @@ module TVDB
       }
 
       def self.get(file)
-        Logger.log "TVDB::API::System #{info}"
-
         info = {}
 
         _, stdout, _ = Open3.popen3('AtomicParsley', file, '-t')
@@ -70,11 +64,9 @@ module TVDB
         end
 
         if info['show'] && info['season'] && info['number'] && info['title']
-          Logger.log "TVDB::API::System enough info, let's create an episode!"
-
           Episode.parse(info)
         else
-          Logger.log "TVDB::API::System can't collect enough information for #{file}"
+          Logger.err "TVDB::API::AtomicParsley Can't collect enough information for #{file}"
         end
       end
     end
@@ -83,8 +75,8 @@ module TVDB
       
       @@url = "http://127.0.0.1:3000"
 
-      def self.get(query)
-        fetch("#{@@url}/search/#{query.gsub(" ", "%20")}.json")
+      def self.get(file)
+        fetch("#{@@url}/search/#{CGI.escape(File.basename(file))}.json")
       end
 
       protected
@@ -92,14 +84,14 @@ module TVDB
       def self.fetch(url)
         response = Net::HTTP.get_response(URI(url))
 
-        Logger.log "TVDB::API::WWW Response is #{response}"
-
         case response
           when Net::HTTPSuccess then
             Episode.parse(JSON.parse(response.body))
           when Net::HTTPRedirection then
             fetch(response['location'])
           else
+            Logger.err "TVDB::API::WWW Can't find episode with #{url}"
+
             nil
         end
       end
@@ -116,19 +108,14 @@ module TVDB
         :format           => "%show/%season/%number. %title",
         :delete_original  => false
       }
-
-      Logger.log @options
     end
 
     def run
       files.each do |file|
-        Logger.log "Working on #{file}"
-
-        # first, let's try with the service
         if episode = API.get(file)
           copy(file, episode)
         else
-          Logger.log "Can't find episode : #{file}"
+          Logger.err "TVDB::App Can't find episode : #{file}"
         end
       end
     end
@@ -147,7 +134,7 @@ module TVDB
       begin
         FileUtils.link(file, dest)
       rescue Errno::EEXIST
-        Logger.log "Destination file already exists : #{dest}"
+        Logger.err "TVDB::App Destination file already exists : #{dest}"
       end
 
       # delete the original file if required
