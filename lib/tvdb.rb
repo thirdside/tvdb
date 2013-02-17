@@ -7,7 +7,7 @@ require 'json'
 
 module TVDB
   class Logger
-    def log message
+    def self.log message
       puts message
     end
   end
@@ -108,7 +108,7 @@ module TVDB
 
   class App
 
-    def initialize(*params)
+    def initialize(params)
       @options = {
         :source           => params[0] || ".",
         :destination      => params[1] || "destination",
@@ -116,6 +116,8 @@ module TVDB
         :format           => "%show/%season/%number. %title",
         :delete_original  => false
       }
+
+      Logger.log @options
     end
 
     def run
