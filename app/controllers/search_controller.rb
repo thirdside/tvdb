@@ -5,13 +5,13 @@ class SearchController < ApplicationController
   end
 
   def torrent
-    if params[:torrent]
-      torrent = params[:torrent].match(/(?<title>.+)\.S?(?<season>\d{2})E?(?<episode>\d{2})/)
+    if params[:torrent].present?
+      torrent = params[:torrent].match(/(?<title>.+)\.\w?(?<season>\d+)\w?(?<episode>\d+)/)
 
       # sanitize a bit...
-      title     = torrent["title"].split(".").join(" ")
-      season    = torrent["season"].to_i
-      episode   = torrent["episode"].to_i
+      title     = (torrent["title"]   || "").split(".").join(" ")
+      season    = (torrent["season"]  || "").to_i
+      episode   = (torrent["episode"] || "").to_i
 
       search(title, season, episode)
     end

@@ -1,0 +1,8 @@
+%ul
+  - resource.seasons.each do |season|
+    %li
+      = link_to season.decorate.display_name, show_season_path(resource, season)
+
+      %ul
+        - season.episodes.each do |episode|
+          %li= link_to episode.decorate.display_name, show_season_episode_path(resource, season, episode)
