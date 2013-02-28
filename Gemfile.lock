@@ -30,6 +30,7 @@ GEM
       multi_json (~> 1.0)
     arel (3.0.2)
     builder (3.0.4)
+    cocaine (0.4.2)
     coderay (1.0.8)
     coffee-rails (3.2.2)
       coffee-script (>= 2.2.0)
@@ -71,6 +72,12 @@ GEM
     mime-types (1.21)
     multi_json (1.5.1)
     multi_xml (0.5.3)
+    paperclip (3.4.0)
+      activemodel (>= 3.0.0)
+      activerecord (>= 3.0.0)
+      activesupport (>= 3.0.0)
+      cocaine (~> 0.4.0)
+      mime-types
     polyglot (0.3.3)
     pry (0.9.11.4)
       coderay (~> 1.0.5)
@@ -144,6 +151,7 @@ DEPENDENCIES
   haml
   inherited_resources
   jquery-rails
+  paperclip
   pry
   rails (= 3.2.12)
   retriable

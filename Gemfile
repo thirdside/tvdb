@@ -21,6 +21,7 @@ group :assets do
 end
 
 gem 'retriable'
+gem 'paperclip'
 gem 'tvdbr'
 gem 'inherited_resources'
 gem 'jquery-rails'
