@@ -1,4 +1,4 @@
-Tvdb::Application.routes.draw do
+Naskit::Application.routes.draw do
   
   resources :shows do
     resources :seasons do

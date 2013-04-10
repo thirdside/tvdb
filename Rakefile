@@ -4,4 +4,4 @@
 
 require File.expand_path('../config/application', __FILE__)
 
-Tvdb::Application.load_tasks
+Naskit::Application.load_tasks
