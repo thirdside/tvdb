@@ -5,8 +5,6 @@ gem 'rails', '3.2.12'
 # Bundle edge Rails instead:
 # gem 'rails', :git => 'git://github.com/rails/rails.git'
 
-gem 'sqlite3'
-
 
 # Gems used only for assets and not required
 # in production environments by default.
@@ -29,5 +27,16 @@ gem 'haml'
 gem 'thin'
 gem 'draper'
 gem 'utilities'
-gem 'pry'
+gem 'choice'
+gem 'mysql2'
+gem 'unicorn'
+gem 'foreman'
+gem 'therubyracer'
+
+group :development do
+  gem 'capistrano'
+  gem 'capistrano-unicorn'
+  gem 'pry'
+  gem 'sqlite3'
+end
 
