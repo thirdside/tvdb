@@ -4,25 +4,36 @@ class SearchController < ApplicationController
     search(params[:show], params[:season], params[:episode])
   end
 
-  def torrent
-    if params[:torrent].present?
-      torrent = params[:torrent].match(/(?<title>.+)\.[sS]?(?<season>\d+)[eExX](?<episode>\d+)/)
-      
-      title     = torrent["title"].split(".").join(" ")
-      season    = torrent["season"].to_i
-      episode   = torrent["episode"].to_i
-
-      search(title, season, episode)
-    end
-  end
-
   def query
-    # let's do some research!
+    if params[:q].present?
+      
+      # is this a tv show in torrent format?
+      if torrent = params[:q].match(/(?<show>.+)\.[sS]?(?<season>\d+)[eExX](?<episode>\d+)/)
+        show      = torrent["show"].split(".").join(" ")
+        season    = torrent["season"].to_i
+        episode   = torrent["episode"].to_i
+
+        search_episode(show, season, episode)
+      else
+        search_movie_or_episode(params[:q])
+      end
+
+    end
   end
 
   protected
 
-  def search show, season, episode
+  def search_movie_or_episode name
+    if resource = Movie.where(title: name).first
+      redirect_to movie_path(resource, format: params[:format]), status: 301
+    elsif resource = Episode.where(title: name).first
+      redirect_to show_season_episode_path(resource.show, resource.season, resource, format: params[:format]), status: 301
+    else
+      render :text => nil, :status => 404
+    end
+  end
+
+  def search_episode show, season, episode
     show      = Show.where("lower(title) LIKE ?", show.downcase).first_or_initialize
     season    = show.seasons.where(number: season).first_or_initialize
     

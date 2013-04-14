@@ -1,5 +1,7 @@
 Naskit::Application.routes.draw do
   
+  resources :movies
+
   resources :shows do
     resources :seasons do
       resources :episodes
@@ -7,9 +9,6 @@ Naskit::Application.routes.draw do
   end
 
   match "/search/:show/:season/:episode" => "search#url"
-  match "/search/:torrent" => "search#torrent", :constraints => {
-    :torrent  => /([^\/]+)[^(xml|html|json|xbmc)]/
-  }
   match "/search" => "search#query"
 
   root :to => 'shows#index'
