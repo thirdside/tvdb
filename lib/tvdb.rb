@@ -128,7 +128,18 @@ module TVDB
 
       # link the file
       begin
-        FileUtils.link(file, dest)
+        if @options[:profile]
+          profile = Naskit::Convert::M4V.new(file, dest)
+
+          if profile.matches?
+            FileUtils.link(file, dest)
+          else
+            success = profile.convert!
+            Logger.err "File not converted: #{file}" unless success
+          end
+        else
+          FileUtils.link(file, dest)
+        end
       rescue Errno::EEXIST
         Logger.err "TVDB::App Destination file already exists : #{dest}"
       end
@@ -167,7 +178,7 @@ Choice.options do
   option :extensions do
     short '-e'
     long '--extensions=EXTENSIONS'
-    desc 'File extensions (default "avi,mp4,mkv,m4v")'
+    desc 'File extensions to look for (default "avi,mp4,mkv,m4v")'
     default "avi,mp4,mkv,m4v"
   end
 
@@ -181,6 +192,12 @@ Choice.options do
   option :delete do
     long '--delete'
     desc 'Delete the original file'
+  end
+
+  option :profile do
+    long '--profile'
+    desc 'Profile to encode files (m4v)'
+    default nil
   end
 end
 

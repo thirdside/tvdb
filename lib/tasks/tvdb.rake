@@ -41,8 +41,12 @@ namespace :tvdb do
 
   tvdb = Tvdbr::Client.new('918153CC4FEFC92A')
   
-  task update: :environment do
-    Show.all.each do |show|
+  task :update, [:show_title] => :environment do |task, args|
+    args.with_default(:show_title => nil)
+    
+    shows = args[:show_name] ? Show.where(:title => args[:title]) : Show.all
+
+    shows.each do |show|
       s = tvdb.fetch_series_from_data(title: show.title)
       update_show(s)
     end
