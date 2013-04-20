@@ -32,6 +32,7 @@ gem 'mysql2'
 gem 'unicorn'
 gem 'foreman'
 gem 'therubyracer'
+gem 'whenever'
 
 group :development do
   gem 'capistrano'

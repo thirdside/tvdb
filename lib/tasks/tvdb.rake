@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 def update_show(s)
+  return unless s
   retriable on: [Timeout::Error], interval: 1 do
     show = Show.where(title: s.title).first_or_create
     show.update_attributes(
@@ -43,7 +44,7 @@ namespace :tvdb do
   
   task :update, [:show_title] => :environment do |task, args|
     args.with_default(:show_title => nil)
-    
+
     shows = args[:show_name] ? Show.where(:title => args[:title]) : Show.all
 
     shows.each do |show|

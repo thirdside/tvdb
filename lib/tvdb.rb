@@ -7,6 +7,8 @@ require 'net/http'
 require 'open3'
 require 'json'
 
+require_relative 'naskit/converter'
+
 module TVDB
   
   class Logger
@@ -75,7 +77,7 @@ module TVDB
 
     class WWW
       
-      @@url = "http://127.0.0.1:3000"
+      @@url = "http://naskit.thirdside.ca"
 
       def self.get(file)
         fetch("#{@@url}/search/#{CGI.escape(File.basename(file))}.json")
@@ -129,7 +131,7 @@ module TVDB
       # link the file
       begin
         if @options[:profile]
-          profile = Naskit::Convert::M4V.new(file, dest)
+          profile = Naskit::Converter::M4V.new(file, dest)
 
           if profile.matches?
             FileUtils.link(file, dest)
