@@ -10,7 +10,7 @@ require 'json'
 require_relative 'naskit/converter'
 
 module TVDB
-  
+
   class Logger
     def self.log message
       $stdout.puts message
@@ -22,12 +22,12 @@ module TVDB
   end
 
   class Episode
-    
+
     attr_accessor :id, :number, :title, :description, :season, :show, :date
 
     def self.parse(data)
       e = Episode.new
-      
+
       %w(id number title description season show).each do |attr|
         e.send("#{attr}=", data[attr])
       end
@@ -37,7 +37,7 @@ module TVDB
   end
 
   class API
-    
+
     def self.get(file)
       [AtomicParsley, WWW].each do |klass|
         if e = klass.get(file)
@@ -47,7 +47,7 @@ module TVDB
     end
 
     class AtomicParsley
-      
+
       @@prop = {
         "©nam" => 'title',
         "©dat" => 'date',
@@ -76,7 +76,7 @@ module TVDB
     end
 
     class WWW
-      
+
       @@url = "http://naskit.thirdside.ca"
 
       def self.get(file)

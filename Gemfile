@@ -33,6 +33,7 @@ gem 'unicorn'
 gem 'foreman'
 gem 'therubyracer'
 gem 'whenever'
+gem 'newrelic_rpm'
 
 group :development do
   gem 'capistrano'
